@@ -108,5 +108,5 @@ MAT files are provided in `data sets/`. The examples load these directly (e.g., 
 ### Credits
 
 - Original MATLAB code and book: Nicolas Gillis (and collaborators)
-- Python translation and development: Valentin Leplat (`v.leplat@innopolis.ru`)
+- Python translation and development: Valentin Leplat (`valentin.leplat@gmail.com`)
 - For questions about the original MATLAB code: `nicolas.gillis@umons.ac.be`
