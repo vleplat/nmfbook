@@ -11,7 +11,7 @@ The codes of this NMF book are divided in 4 folders:
 - `examples by chapter`: contains the numerical examples from the book, classified chapter by chapter; they can be used to generate many figures presented in the book. It also contains some algorithms that are not NMF algorithms (e.g., lower bounds for the nonnegative rank).
 - `utils`: contains some useful functions.
 
-For the original MATLAB package: the book is available for free on the webpage `https://sites.google.com/site/nicolasgillis/book`. Please report bugs to `nicolas.gillis@umons.ac.be`. Python port and contributions by Valentin Leplat (`v.leplat@innopolis.ru`).
+For the original MATLAB package: the book is available for free on the webpage `https://sites.google.com/site/nicolasgillis/book`. Please report bugs to `nicolas.gillis@umons.ac.be`. Python port and contributions by Valentin Leplat (`valentin.leplat@gmail.com`).
 
 ### Implemented Algorithms (Python)
 
