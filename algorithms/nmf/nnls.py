@@ -12,7 +12,7 @@ class NNLSOptions:
     init: np.ndarray | None = None
     delta: float = 1e-6
     inneriter: int = 500
-    alpha: float | None = None
+    alpha: float | None = None  # used as ADMM rho when algo=="ADMM"
 
 
 def _compute_wtw_wtx(W: np.ndarray, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -91,6 +91,72 @@ def _nnls_alsh(X: np.ndarray, W: np.ndarray, options: NNLSOptions) -> Tuple[np.n
     return H, WTW, WTX
 
 
+def _spectral_norm_estimate(A: np.ndarray, iters: int = 20) -> float:
+    r = A.shape[0]
+    v = np.random.default_rng(0).random(r)
+    for _ in range(max(1, iters)):
+        v = A @ v
+        nv = np.linalg.norm(v)
+        if nv == 0:
+            break
+        v = v / nv
+    return float(np.linalg.norm(A @ v))
+
+
+def _nnls_fpgm(X: np.ndarray, W: np.ndarray, options: NNLSOptions) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Fast Projected Gradient Method for NNLS: min_H 0.5||X - W H||_F^2, H>=0.
+    """
+    WTW, WTX = _compute_wtw_wtx(W, X)
+    r, n = WTW.shape[0], X.shape[1]
+    if options.init is None or options.init.size == 0:
+        H = np.zeros((r, n), dtype=float)
+    else:
+        H = np.maximum(0.0, np.asarray(options.init, dtype=np.float64).copy())
+    Z = H.copy()
+    t = 1.0
+    L = _spectral_norm_estimate(WTW)
+    if not np.isfinite(L) or L <= 0:
+        L = 1.0
+    step = 1.0 / L
+    for _ in range(max(1, options.inneriter)):
+        G = WTW @ Z - WTX  # gradient at Z
+        H_next = Z - step * G
+        H_next = np.maximum(0.0, H_next)
+        t_next = 0.5 * (1.0 + np.sqrt(1.0 + 4.0 * t * t))
+        Z = H_next + ((t - 1.0) / t_next) * (H_next - H)
+        H = H_next
+        t = t_next
+    return H, WTW, WTX
+
+
+def _nnls_admm(X: np.ndarray, W: np.ndarray, options: NNLSOptions) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    AO-ADMM for NNLS: min_H 0.5||X - W H||_F^2 s.t. H >= 0.
+    """
+    WTW, WTX = _compute_wtw_wtx(W, X)
+    r, n = WTW.shape[0], X.shape[1]
+    if options.init is None or options.init.size == 0:
+        H = np.maximum(0.0, np.random.default_rng(0).random((r, n)))
+    else:
+        H = np.maximum(0.0, np.asarray(options.init, dtype=np.float64).copy())
+    Z = H.copy()
+    U = np.zeros_like(H)
+    rho = options.alpha if (options.alpha is not None and options.alpha > 0) else 1.0
+    # Precompute system matrix
+    A = WTW + rho * np.eye(r)
+    # Factorization may be faster, but solve is fine here
+    for _ in range(max(1, options.inneriter)):
+        B = WTX + rho * (Z - U)
+        try:
+            H = np.linalg.solve(A, B)
+        except np.linalg.LinAlgError:
+            H = np.linalg.lstsq(A, B, rcond=None)[0]
+        Z = np.maximum(0.0, H + U)
+        U = U + H - Z
+    return H, WTW, WTX
+
+
 def nnls(W: np.ndarray, X: np.ndarray, options: NNLSOptions | None = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     if options is None:
         options = NNLSOptions()
@@ -102,6 +168,10 @@ def nnls(W: np.ndarray, X: np.ndarray, options: NNLSOptions | None = None) -> Tu
         return _nnls_mu(X, W, options)
     if algo == "ALSH":
         return _nnls_alsh(X, W, options)
+    if algo == "FPGM":
+        return _nnls_fpgm(X, W, options)
+    if algo == "ADMM":
+        return _nnls_admm(X, W, options)
 
     if algo in ("ASET", "FPGM", "ADMM"):
         raise NotImplementedError(f"NNLS algorithm '{algo}' not yet implemented")

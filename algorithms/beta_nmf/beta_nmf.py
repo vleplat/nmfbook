@@ -19,11 +19,22 @@ class BetaNMFOptions:
     display: int = 1
     # Rescale columns of W and rows of H every N iterations (0 disables)
     rescale_every: int = 0
+    # Match MATLAB: do not scale columns of W at initialization
+    scale_init: bool = False
 
 
 def _nd_mubeta(X: np.ndarray, W: np.ndarray, H: np.ndarray, beta: float) -> tuple[np.ndarray, np.ndarray, Optional[float]]:
     eps = np.finfo(float).eps
     e_val = None
+    if beta == 0.0:
+        # IS divergence: use general beta-NMF formula for MU (beta=0)
+        WH = W @ H + eps
+        N = W.T @ (X * (WH ** (-2.0)))
+        D = W.T @ (WH ** (-1.0)) + eps
+        # objective (unnormalized IS divergence)
+        Z = X / WH
+        e_val = float(np.sum(Z - np.log(Z + eps) - 1.0))
+        return N, D, e_val
     if beta == 1.0:
         # KL divergence
         XdWH = X / (W @ H + eps)
@@ -51,7 +62,9 @@ def _nd_mubeta(X: np.ndarray, W: np.ndarray, H: np.ndarray, beta: float) -> tupl
 def _mubeta_update(X: np.ndarray, W: np.ndarray, H: np.ndarray, beta: float, epsilon: float) -> tuple[np.ndarray, Optional[float]]:
     N, D, e = _nd_mubeta(X, W, H, beta)
     ratio = N / (D + np.finfo(float).eps)
-    if 1.0 <= beta <= 2.0:
+    if beta == 0.0:
+        H_new = np.maximum(epsilon, H * ratio)
+    elif 1.0 <= beta <= 2.0:
         H_new = np.maximum(epsilon, H * ratio)
     else:
         gamma = 1.0 / (2.0 - beta) if beta < 1.0 else 1.0 / (beta - 1.0)
@@ -77,11 +90,12 @@ def beta_nmf(X: np.ndarray, r: int, options: Optional[BetaNMFOptions] = None) ->
         else:
             options.extrapol = "noextrap"
 
-    # scale columns of W to have max 1
-    for k in range(r):
-        mxk = max(np.max(W[:, k]), options.epsilon)
-        W[:, k] = W[:, k] / mxk
-        H[k, :] = H[k, :] * mxk
+    # Optional initial column scaling (disabled by default to mirror MATLAB)
+    if options.scale_init:
+        for k in range(r):
+            mxk = max(np.max(W[:, k]), options.epsilon)
+            W[:, k] = W[:, k] / mxk
+            H[k, :] = H[k, :] * mxk
 
     Hp = H.copy()
     Wp = W.copy()
@@ -137,7 +151,11 @@ def beta_nmf(X: np.ndarray, r: int, options: Optional[BetaNMFOptions] = None) ->
 
         # error value (D_beta(X, WH)) at current iterate
         # Use KL (beta=1) or Fro (beta=2) specialized formula; otherwise compute generic beta-div
-        if beta == 1.0:
+        if beta == 0.0:
+            WH = W @ H + np.finfo(float).eps
+            Z = X / WH
+            e_cur = float(np.sum(Z - np.log(Z + np.finfo(float).eps) - 1.0))
+        elif beta == 1.0:
             eps = np.finfo(float).eps
             XdWH = X / (W @ H + eps)
             Xnnz = X[X > 0]
@@ -147,8 +165,15 @@ def beta_nmf(X: np.ndarray, r: int, options: Optional[BetaNMFOptions] = None) ->
             WtW = W.T @ W
             e_cur = float(0.5 * (np.linalg.norm(X, ord="fro") ** 2 - 2 * np.sum((W.T @ X) * H) + np.sum(WtW * (H @ H.T))))
         else:
-            WH = W @ H + np.finfo(float).eps
-            e_cur = float(np.sum((WH ** (beta) - beta * X * (WH ** (beta - 1.0))) / (beta * (beta - 1.0))))
+            eps = np.finfo(float).eps
+            WH = W @ H + eps
+            # Full beta-divergence (includes X^beta term)
+            e_cur = float(
+                np.sum(
+                    (np.power(X + eps, beta) - beta * X * np.power(WH, beta - 1.0) + (beta - 1.0) * np.power(WH, beta))
+                    / (beta * (beta - 1.0))
+                )
+            )
 
         e_vals.append(e_cur)
         t_vals.append(__import__("time").perf_counter() - start)

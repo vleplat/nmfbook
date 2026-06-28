@@ -294,6 +294,139 @@ python "examples by chapter/Chapter 1 - Introduction/Mary_piano.py"
 
 This generates activation plots, frequency-response plots, and the objective value per iteration in `figs/`.
 
+#### Chapter 1 - Swimmer (parts-based factorizations)
+
+```bash
+source .venv/bin/activate
+python "examples by chapter/Chapter 1 - Introduction/Swimmer.py"
+```
+
+Generates:
+- `swimmer_samples.pdf`: grid of sample images,
+- `swimmer_basis_nmf.pdf`: basis images from standard Fro-NMF (r=17),
+- `swimmer_basis_snpa.pdf`: basis images from separable NMF (SNPA).
+
+#### Chapter 1 - TDT2 topics (Fro-NMF)
+
+```bash
+source .venv/bin/activate
+python "examples by chapter/Chapter 1 - Introduction/tdt2_top30.py"
+```
+
+Generates:
+- `tdt2_topics_heatmap.pdf`: H row-normalized, documents grouped by dominant topic,
+- `tdt2_topics_top10_words.pdf` (if `words` are available in the MAT file),
+- `tdt2_error_vs_time.pdf`: objective vs. time for Fro-NMF.
+
+#### Chapter 1 - Urban hyperspectral (hierarchical rank-two NMF)
+
+```bash
+source .venv/bin/activate
+python "examples by chapter/Chapter 1 - Introduction/Urban.py"
+```
+
+Generates:
+- `urban_basis_spectra.pdf`: basis spectra (columns of W),
+- `urban_abundances_maps.pdf`: abundance maps (rows of H reshaped 307x307) via `utils/affichage`.
+
+#### Chapter 2 - Exact NMF: nested hexagons and geometric view
+
+```bash
+source .venv/bin/activate
+python "examples by chapter/Chapter 2 - Exact NMF/ExactNMF_nested_hexagons.py"
+```
+
+What this does (per MATLAB doc, Chapter 2 - Exact NMF):
+- Builds the 6×6 matrix \(X_a\) that models two nested regular hexagons; parameter a ∈ (1, +∞].
+- The nonnegative rank depends on a:
+  - if a ≤ 2, rank₊(Xₐ) = 3
+  - if a ≤ 3, rank₊(Xₐ) = 4
+  - else, rank₊(Xₐ) = 5
+  - for a = +∞, a limiting 0–1 matrix is used (rank₊ = 5)
+- Runs an Exact NMF heuristic to compute an exact factorization Xₐ = W H (up to tolerance).
+- Displays the geometric interpretation for the rank-3 case: a 2D nested-polytope (NPP) instance
+  showing the outer polygon (Δ⁶ ∩ col(Xₐ)) and the inner polygon (conv(Xₐ)), as in the book.
+
+Generated figures:
+- `exactnmf_nested_hexagons_polygons.pdf`: outer vs. inner polygon in 2D (when applicable).
+- `exactnmf_nested_hexagons_convW.pdf`: 2D view of conv(W) when rank(W) ≤ 3.
+
+Notes:
+- The default script uses a = 3 (so rank₊ = 4). Edit the `a` value at the top of the script to
+  reproduce other cases from the book (e.g., a = 2, a = 2.5, a = np.inf).
+- The 2D swap and column/row rescaling follow the MATLAB script logic to enable planar display.
+
+#### Chapter 5 - NMF models (CBCL and Urban)
+
+CBCL demos (face basis extraction), mirroring MATLAB Chapter 5 scripts:
+
+- Projective NMF on CBCL (Fig. 5.3)
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/CBCL_projectiveNMF.py"
+```
+
+Generates:
+- `cbcl_projective_init_spa.pdf`: SPA initialization basis (W0)
+- `cbcl_projective_basis.pdf`: projective NMF basis (W)
+- `cbcl_projective_error.pdf`: objective vs. iterations (||X − W Wᵀ X||_F)
+
+- Semi-NMF on CBCL (Fig. 5.4)
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/CBCL_semiNMF.py"
+```
+
+Generates:
+- `cbcl_seminmf_basis.pdf`: semi-NMF basis elements (19×19)
+
+- Sparse NMF on CBCL (Fig. 5.5)
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/CBCL_sparseNMF.py"
+```
+
+Generates:
+- `cbcl_sparse_nmf_basis.pdf`: baseline NMF basis (no sparsity)
+- `cbcl_sparse_nmf_basis_sparse.pdf`: sparse NMF basis (sW=0.85)
+
+- Recursive NMU on CBCL (Fig. 5.6)
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/CBCL_NMU.py"
+```
+
+Generates:
+- `cbcl_nmu_basis.pdf`: NMU basis maps (49 components)
+
+- Tri-NMF on CBCL (Fig. 5.10)
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/CBCL_triNMF.py"
+```
+
+Generates:
+- `cbcl_trinmf_W1.pdf`: first layer basis `W1`
+- `cbcl_trinmf_W1W2.pdf`: product `W1 W2`
+
+Urban demo (projective NMF), mirroring MATLAB ProjectiveNMF_Urban.m (Fig. 5.2):
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/ProjectiveNMF_Urban.py"
+```
+
+Generates:
+- `projective_urban_maps.pdf`: abundance maps (W as 307×307 images)
+- `projective_urban_error.pdf`: normalized error vs. iterations
+
+Example 5.1 (β-NMF under/over-approximation trends):
+
+```bash
+python "examples by chapter/Chapter 5 - NMF models/Example51.py"
+```
+
+Prints average proportions of positive/negative residual parts for IS-NMF (β=0) vs. Fro-NMF (β=2) across random matrices, reproducing the trends described in the book.
+
 #### Chapter 5 - Karate graph, symmetric NMF demo
 
 ```bash
@@ -316,6 +449,112 @@ This generates:
 - a community graph visualization.
 
 All figures are saved under `figs/`.
+
+#### Chapter 9 - Applications
+
+- Raman SMCR (Section 9.3)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/Raman.py"
+  ```
+
+  Generates:
+  - `raman_W_spectra.pdf`: columns of `W` as spectral signatures vs. wavenumber (cm⁻¹),
+  - `raman_H_timecourses.pdf`: rows of `H` as concentration over time (0:1/3:50 s).
+
+  Notes:
+  - Data: `data sets/RamanSMCR.mat` with variables `W` (m×r) and `H` (r×n).
+  - The wavenumber axis starts at 280 as in the MATLAB script.
+
+- Microarray (Section 9.4)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/Microarray.py"
+  ```
+
+  What this does:
+  - Loads the interferon beta gene microarray dataset `data sets/microarrayIFNbeta.mat` (variable `X`).
+  - Selects r = 3.
+  - Initializes with SNPA (selected columns of `X` as `W0`, corresponding `H0`), then runs Fro-NMF (HALS, 100 iters, β₀ = 0).
+  - Column-wise normalizes `W` by its max per column, pushing the scale into `H` (faithful to MATLAB).
+
+  Generates:
+  - `microarray_W.pdf`: basis matrix `W` (grayscale heatmap).
+
+- Recommender system (Section 9.5)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/RecomSys.py"
+  ```
+
+  What this does:
+  - Uses the 6×5 toy rating matrix from the book; zeros indicate missing entries.
+  - Solves weighted low-rank approximation with nonnegativity constraints (Weighted NMF) and missing-data mask `P = (X>0)`.
+  - Re-initializes until the reconstructed entries lie within [0.5, 6.5], then normalizes `W` columns to [0, 5] (scaling propagated to `H`), as in MATLAB.
+  - Prints `W`, `H`, the weighted RMSE on observed entries, and the approximation `W@H`.
+
+  Notes:
+  - The problem is highly initialization-sensitive (see Gillis & Glineur, SIAM SIMAX 2011). You will not necessarily reproduce the same numeric factors as in the book, but the script follows the exact MATLAB procedure.
+
+#### Chapter 8 - NMF algorithms
+
+- MU vs. modified MU (Figure 8.2)
+
+  ```bash
+  python "examples by chapter/Chapter 8 - NMF algorithms/MU_vs_modifiedMU.py"
+  ```
+
+  What this does:
+  - Compares standard MU (ε=0) vs. modified MU (ε=machine eps) on a sparse random matrix (m=500, n=1000, r=40, density=1%).
+  - Plots the error per iteration with MATLAB-like axis scaling [30, 100, em(100), es(30)].
+
+  Generates:
+  - `ch8_mu_vs_modifiedmu.pdf`
+
+- MU vs. extrapolated MUe (β=3/2) on CBCL (Section 8, paper ref. Hien–Leplat–Gillis 2024)
+
+  ```bash
+  python "examples by chapter/Chapter 8 - NMF algorithms/MU_vs_extrapolatedMU.py"
+  ```
+
+  What this does:
+  - Loads CBCL (r=49), initializes W,H with a 1‑step MU improvement, then runs:
+    - MU without extrapolation,
+    - MUe with Nesterov‑type extrapolation.
+  - Displays semilog curves of the normalized β‑divergence vs. iterations.
+
+  Generates:
+  - `ch8_mu_vs_extrapolatedmu.pdf`
+
+- A‑HALS with SNPA init vs. random init on CBCL (Figure 8.5)
+
+  ```bash
+  python "examples by chapter/Chapter 8 - NMF algorithms/FroNMF_init_randvsSNPA.py"
+  ```
+
+  What this does:
+  - Runs A‑HALS (Fro‑NMF) with:
+    - SNPA initialization (on Xᵀ): `W0` from SNPA, `H0 = X[K,:]`,
+    - random initialization,
+  - Time budget 5 seconds (book figure uses 5 s).
+
+  Generates:
+  - `ch8_fronmf_init_rand_vs_snpa.pdf`
+
+- Algorithm comparison on multiple datasets (Figures 8.3–8.4)
+
+  ```bash
+  python "examples by chapter/Chapter 8 - NMF algorithms/FroNMF_algo_comparison.py"
+  ```
+
+  What this does:
+  - Compares MU (1 inner iter), A‑MU (100 inner iters), ALS, A‑HALS, E‑A‑HALS, FPGM, and AO‑ADMM.
+  - Dataset selection is via `experience` at the top of the script:
+    - 1: CBCL, r=49; 2: CBCL, r=10; 3: classic, r=30; 4: TDT2, r=30.
+  - Time budget set to 5 s for quick runs (book uses 30 s); uses `utils/sumte.py` to average errors on a common time grid.
+
+  Generates:
+  - `ch8_fronmf_algo_comparison_subset.pdf`
 
 ---
 
