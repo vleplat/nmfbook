@@ -450,52 +450,6 @@ This generates:
 
 All figures are saved under `figs/`.
 
-#### Chapter 9 - Applications
-
-- Raman SMCR (Section 9.3)
-
-  ```bash
-  python "examples by chapter/Chapter 9 - Applications/Raman.py"
-  ```
-
-  Generates:
-  - `raman_W_spectra.pdf`: columns of `W` as spectral signatures vs. wavenumber (cm⁻¹),
-  - `raman_H_timecourses.pdf`: rows of `H` as concentration over time (0:1/3:50 s).
-
-  Notes:
-  - Data: `data sets/RamanSMCR.mat` with variables `W` (m×r) and `H` (r×n).
-  - The wavenumber axis starts at 280 as in the MATLAB script.
-
-- Microarray (Section 9.4)
-
-  ```bash
-  python "examples by chapter/Chapter 9 - Applications/Microarray.py"
-  ```
-
-  What this does:
-  - Loads the interferon beta gene microarray dataset `data sets/microarrayIFNbeta.mat` (variable `X`).
-  - Selects r = 3.
-  - Initializes with SNPA (selected columns of `X` as `W0`, corresponding `H0`), then runs Fro-NMF (HALS, 100 iters, β₀ = 0).
-  - Column-wise normalizes `W` by its max per column, pushing the scale into `H` (faithful to MATLAB).
-
-  Generates:
-  - `microarray_W.pdf`: basis matrix `W` (grayscale heatmap).
-
-- Recommender system (Section 9.5)
-
-  ```bash
-  python "examples by chapter/Chapter 9 - Applications/RecomSys.py"
-  ```
-
-  What this does:
-  - Uses the 6×5 toy rating matrix from the book; zeros indicate missing entries.
-  - Solves weighted low-rank approximation with nonnegativity constraints (Weighted NMF) and missing-data mask `P = (X>0)`.
-  - Re-initializes until the reconstructed entries lie within [0.5, 6.5], then normalizes `W` columns to [0, 5] (scaling propagated to `H`), as in MATLAB.
-  - Prints `W`, `H`, the weighted RMSE on observed entries, and the approximation `W@H`.
-
-  Notes:
-  - The problem is highly initialization-sensitive (see Gillis & Glineur, SIAM SIMAX 2011). You will not necessarily reproduce the same numeric factors as in the book, but the script follows the exact MATLAB procedure.
-
 #### Chapter 8 - NMF algorithms
 
 - MU vs. modified MU (Figure 8.2)
@@ -555,6 +509,54 @@ All figures are saved under `figs/`.
 
   Generates:
   - `ch8_fronmf_algo_comparison_subset.pdf`
+
+#### Chapter 9 - Applications
+
+- Raman SMCR (Section 9.3)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/Raman.py"
+  ```
+
+  Generates:
+  - `raman_W_spectra.pdf`: columns of `W` as spectral signatures vs. wavenumber (cm⁻¹),
+  - `raman_H_timecourses.pdf`: rows of `H` as concentration over time (0:1/3:50 s).
+
+  Notes:
+  - Data: `data sets/RamanSMCR.mat` with variables `W` (m×r) and `H` (r×n).
+  - The wavenumber axis starts at 280 as in the MATLAB script.
+
+- Microarray (Section 9.4)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/Microarray.py"
+  ```
+
+  What this does:
+  - Loads the interferon beta gene microarray dataset `data sets/microarrayIFNbeta.mat` (variable `X`).
+  - Selects r = 3.
+  - Initializes with SNPA (selected columns of `X` as `W0`, corresponding `H0`), then runs Fro-NMF (HALS, 100 iters, β₀ = 0).
+  - Column-wise normalizes `W` by its max per column, pushing the scale into `H` (faithful to MATLAB).
+
+  Generates:
+  - `microarray_W.pdf`: basis matrix `W` (grayscale heatmap).
+
+- Recommender system (Section 9.5)
+
+  ```bash
+  python "examples by chapter/Chapter 9 - Applications/RecomSys.py"
+  ```
+
+  What this does:
+  - Uses the 6×5 toy rating matrix from the book; zeros indicate missing entries.
+  - Solves weighted low-rank approximation with nonnegativity constraints (Weighted NMF) and missing-data mask `P = (X>0)`.
+  - Re-initializes until the reconstructed entries lie within [0.5, 6.5], then normalizes `W` columns to [0, 5] (scaling propagated to `H`), as in MATLAB.
+  - Prints `W`, `H`, the weighted RMSE on observed entries, and the approximation `W@H`.
+
+  Notes:
+  - The problem is highly initialization-sensitive (see Gillis & Glineur, SIAM SIMAX 2011). You will not necessarily reproduce the same numeric factors as in the book, but the script follows the exact MATLAB procedure.
+
+
 
 ---
 
