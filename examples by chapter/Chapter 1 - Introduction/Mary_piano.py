@@ -39,7 +39,7 @@ def main():
 
     timex = (np.arange(H.shape[1]) / 600.0) * 5.0
     freqx = (np.arange(1, W.shape[0] + 1) * 50.0) / 1000.0
-    notes = ["D_4", "C_4", "E_4", "hammer"]
+    notes = ["C_4", "hammer", "D_4", "E_4"]
 
     plt.figure(figsize=(10, 8))
     p = 1
