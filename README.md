@@ -44,7 +44,7 @@ The codes of this NMF book are divided into 4 folders:
 - `examples by chapter`: contains the numerical examples from the book, classified chapter by chapter. They can be used to generate many figures presented in the book. This folder also contains some algorithms that are not NMF algorithms, for example lower bounds for the nonnegative rank.
 - `utils`: contains useful functions used by several algorithms and examples.
 
-### Implemented Algorithms (Python)
+### Examples of Implemented Algorithms (Python)
 
 - Symmetric NMF via exact coordinate descent (`algorithms/symmetric_nmf/`)
   - Entry points: `symnmf(A, r, options)` and `SymNMFOptions`
