@@ -13,6 +13,9 @@ if BASE not in sys.path:
     sys.path.insert(0, BASE)
 
 from algorithms.nmf import fro_nmf, FroNMFOptions
+from algorithms.onmf import onmf, ONMFOptions
+from algorithms.minvol_nmf import minvol_nmf, MinVolNMFOptions
+from algorithms.nmu.recursive import recursive_nmu, RecursiveNMUOptions
 from algorithms.separable_nmf import snpa_matlab, SNPAOptions, solve_h_given_indices
 from utils.affichage import affichage
 
@@ -51,6 +54,22 @@ def main():
     # 2) SNPA (separable NMF) as in MATLAB
     K, Hsnpa = snpa_matlab(X_alg, r, SNPAOptions(maxitn=200, normalize=0, proj=0, relerr=1e-6, display=1))
     affichage(Hsnpa.T, (h, w), ncols=17, suptitle="Basis images with separable NMF (SNPA)", save_path=os.path.join(figs, "swimmer_basis_snpa.pdf"))
+
+    # 3) ONMF (sensitive to init) — default: SNPA-based init
+    # Use SNPA coefficients to build a nonnegative W0
+    W0 = np.maximum(1e-12, X_alg @ Hsnpa.T)  # m x r
+    # Normalize columns
+    W0 = W0 / (np.linalg.norm(W0, axis=0, keepdims=True) + 1e-16)
+    Wonmf, Honmf, *_ = onmf(X_alg, r, ONMFOptions(W=W0, display=0, timemax=10.0))
+    affichage(Honmf.T, (h, w), ncols=17, suptitle="Basis images with ONMF", save_path=os.path.join(figs, "swimmer_basis_onmf.pdf"))
+
+    # 4) Min-volume NMF
+    Wminv, Hminv, *_ = minvol_nmf(X_alg, r, MinVolNMFOptions(W=W0.copy(), H=Hsnpa.copy(), display=0, timemax=30.0))
+    affichage(Hminv.T, (h, w), ncols=17, suptitle="Basis images with min-vol NMF", save_path=os.path.join(figs, "swimmer_basis_minvol.pdf"))
+
+    # 5) NMU (recursive)
+    Wnmu, Hnmu = recursive_nmu(X_alg, r, RecursiveNMUOptions(Cnorm=1, maxiter=200, display=1))
+    affichage(Hnmu.T, (h, w), ncols=17, suptitle="Basis images with NMU", save_path=os.path.join(figs, "swimmer_basis_nmu.pdf"))
 
     print("Saved swimmer figures in", figs)
 

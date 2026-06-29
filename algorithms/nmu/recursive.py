@@ -38,18 +38,22 @@ def recursive_nmu(M: np.ndarray, r: int, options: Optional[RecursiveNMUOptions] 
     m, n = M.shape
     U = np.zeros((m, r))
     V = np.zeros((n, r))
-    R = M.copy()
+    R = M.copy()  # residual to pass to next rank-1 factor (updated after each k)
     if options.display:
         print("Recursion started...")
     for k in range(r):
+        # Initialization of (x,y) with optimal rank-1 NMF of current residual
         u, s, vt = np.linalg.svd(R, full_matrices=False)
         x = np.abs(u[:, 0]) * np.sqrt(s[0])
         y = np.abs(vt[0, :]) * np.sqrt(s[0])
         U[:, k] = x
         V[:, k] = y
-        lam = np.maximum(0.0, -(R - np.outer(x, y)))
+        # Current matrix for this component (fixed within inner loop)
+        Mk = R.copy()
+        lam = np.maximum(0.0, -(Mk - np.outer(x, y)))
         for j in range(1, options.maxiter + 1):
-            A = R + np.outer(x, y) - lam
+            # A = M - lambda (independent of current (x,y))
+            A = Mk - lam
             if options.Cnorm == 1:
                 x = _wmedian(A, y)
                 y = _wmedian(A.T, x)
@@ -60,7 +64,7 @@ def recursive_nmu(M: np.ndarray, r: int, options: Optional[RecursiveNMUOptions] 
                 denom = float(x @ x) + 1e-16
                 y = np.maximum(0.0, (A.T @ x) / denom)
             if x.sum() != 0.0 and y.sum() != 0.0:
-                Rk = R - np.outer(x, y)
+                Rk = Mk - np.outer(x, y)
                 U[:, k] = x
                 V[:, k] = y
                 lam = np.maximum(0.0, lam - Rk / (j + 1.0))
@@ -68,6 +72,7 @@ def recursive_nmu(M: np.ndarray, r: int, options: Optional[RecursiveNMUOptions] 
                 lam = lam / 2.0
                 x = U[:, k]
                 y = V[:, k]
+        # Update residual for next component
         R = np.maximum(0.0, R - np.outer(U[:, k], V[:, k]))
         if options.display:
             print(f"{k+1}...", end="" if (k + 1) % 10 else "\n")
