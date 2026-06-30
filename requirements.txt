@@ -3,4 +3,6 @@ matplotlib>=3.7
 scipy>=1.10
 h5py>=3.9
 networkx>=3.1
+cvxpy>=1.4
+scs>=3.2
 

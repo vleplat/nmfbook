@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from utils.simplex import simplex_proj
+from utils.simplex import simplex_proj, simplex_col_proj
 
 
 @dataclass
@@ -23,6 +23,7 @@ def _nnls_fpgm(M: np.ndarray, W: np.ndarray, options: SNPAOptions) -> np.ndarray
     Solve min_Y 0.5||M - W Y||_F^2 with
       - proj=0: Y >= 0
       - proj=1: columns of Y in { y>=0, sum(y) <= 1 }
+      - proj=3: columns of Y in { y>=0, sum(y) = 1 }
     via Fast Projected Gradient Method (Nesterov).
     """
     m, n = M.shape
@@ -60,6 +61,13 @@ def _nnls_fpgm(M: np.ndarray, W: np.ndarray, options: SNPAOptions) -> np.ndarray
             # project each column onto {y>=0, sum(y)<=1}
             for j in range(n):
                 Y_next[:, j] = simplex_proj(Y_next[:, j])
+        elif options.proj == 3:
+            # project each column onto simplex {y>=0, sum(y)=1}
+            Y_next = simplex_col_proj(Y_next)
+        elif options.proj == 2:
+            # project each row onto simplex {y>=0, sum(y)=1}
+            # by applying column-simplex to transpose
+            Y_next = simplex_col_proj(Y_next.T).T
         else:
             Y_next = np.maximum(0.0, Y_next)
         # Nesterov
