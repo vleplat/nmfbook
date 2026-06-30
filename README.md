@@ -349,12 +349,130 @@ What this does (per MATLAB doc, Chapter 2 - Exact NMF):
 
 Generated figures:
 - `exactnmf_nested_hexagons_polygons.pdf`: outer vs. inner polygon in 2D (when applicable).
-- `exactnmf_nested_hexagons_convW.pdf`: 2D view of conv(W) when rank(W) ≤ 3.
+ - `exactnmf_nested_hexagons_convW.pdf`: 2D view of conv(W) when rank(W) ≤ 3.
+ 
+#### Chapter 3 - Nonnegative rank
 
+- UDISJ (unique disjointness) matrix and lower bounds
+
+  ```bash
+  python "examples by chapter/Chapter 3 - Nonnegative rank/UDISJ.py"
+  ```
+
+  What this does (per MATLAB doc, Chapter 3):
+  - Generates the 2^n×2^n UDISJ matrix (default n=3),
+  - Attempts an Exact NMF with r = 2^n−1 using a brief heuristic (for illustration),
+  - Prints lower bounds on rank₊(X): rectangle covering, geometric, nonnegative nuclear norm, self‑scaled, hyperplane separation.
+
+- Regular octagon slack matrix and lower bounds
+
+  ```bash
+  python "examples by chapter/Chapter 3 - Nonnegative rank/bound_nnr_octagon.py"
+  ```
+
+  What this does:
+  - Builds the slack matrix of the regular octagon from Ax≤b and the vertices,
+  - Verifies a known exact NMF S=WH,
+  - Prints the rectangle covering bound and SDP-based bounds.
+
+- Linear EDM bounds X(i,j) = (i−j)^2
+
+  ```bash
+  python "examples by chapter/Chapter 3 - Nonnegative rank/bound_nnr_linEDM.py"
+  ```
+
+  What this does:
+  - Constructs the “linear EDM” X of size n=6 with X(i,j)=(i−j)^2,
+  - Compares lower bounds for rank₊(X).
+
+- Rectangle covering for linear EDM
+
+  ```bash
+  python "examples by chapter/Chapter 3 - Nonnegative rank/rec_cov_linEDM.py"
+  ```
+
+  What this does:
+  - Computes the rectangle covering bound for X (n=6), and lists covering rectangles.
+
+- Thomas’s 4×4 example and lower bounds
+
+  ```bash
+  python "examples by chapter/Chapter 3 - Nonnegative rank/bound_nnr_Thomas.py"
+  ```
+
+  What this does:
+  - Applies lower bounds to a 4×4 binary example matrix from the chapter.
+ 
 Notes:
 - The default script uses a = 3 (so rank₊ = 4). Edit the `a` value at the top of the script to
   reproduce other cases from the book (e.g., a = 2, a = 2.5, a = np.inf).
 - The 2D swap and column/row rescaling follow the MATLAB script logic to enable planar display.
+
+#### Chapter 4 - Identifiability
+
+- SSC1 necessary condition illustration (Figure 4.6)
+
+  ```bash
+  # Optional: control trials per grid point (default 100)
+  NATTEMPTS=100 python "examples by chapter/Chapter 4 - Identifiability/SSC1_nec_cond_illus.py"
+  ```
+
+  What this does (per MATLAB doc, Chapter 4):
+  - Draws random nonnegative matrices H with sprand-like sparsity (rank r, density d),
+  - Tests the necessary condition for SSC1 via NNLS feasibility for all e − e_k,
+  - Displays a heatmap of success rates over (r, d), saved as:
+    - `ch4_ssc1_nec_cond_illus.pdf`
+
+- SSC on a 4×6 2-sparse matrix (Example 4.29)
+
+  ```bash
+  python "examples by chapter/Chapter 4 - Identifiability/checkSSC_H46_2sparse.py"
+  ```
+
+  What this does:
+  - Checks the necessary condition for SSC1 and computes an optimal vertex `x*` of:
+    - maximize ||x||² subject to Hᵀ x ≥ 0, eᵀ x = 1
+  - Prints whether SSC1 holds (||x*||² ≤ 1) and whether SSC2 holds (x* must be a unit vector e_k).
+
+- Min-volume NMF on Urban (r = 6) — Models 1–3
+
+  ```bash
+  python "examples by chapter/Chapter 4 - Identifiability/minvolNMF_Urban.py"
+  ```
+
+  Generates:
+  - `ch4_minvol_urban_maps_1.pdf`, `ch4_minvol_urban_maps_2.pdf`, `ch4_minvol_urban_maps_3.pdf`: abundance maps,
+  - `ch4_minvol_urban_spectra.pdf`: basis spectra for the three models.
+
+- Min-volume NMF on Moffet (r = 3) — Models 1 and 4
+
+  ```bash
+  python "examples by chapter/Chapter 4 - Identifiability/minvolNMF_Moffet.py"
+  ```
+
+  Generates:
+  - `ch4_minvol_moffet_maps_HtE_le_e.pdf`, `ch4_minvol_moffet_maps_HtE_eq_e.pdf`: abundance maps,
+  - `ch4_minvol_moffet_spectra.pdf`: basis spectra; also prints column-sum diagnostics for H.
+
+- ONMF (orthogonal NMF) on CBCL (r = 49)
+
+  ```bash
+  python "examples by chapter/Chapter 4 - Identifiability/ONMF_CBCL.py"
+  ```
+
+  Generates:
+  - `ch4_onmf_cbcl_basis.pdf`: basis images (from Hᵀ),
+  - `ch4_onmf_cbcl_error.pdf`: relative error per iteration.
+
+- ONMF (orthogonal NMF) on Urban (r = 6)
+
+  ```bash
+  python "examples by chapter/Chapter 4 - Identifiability/ONMF_Urban.py"
+  ```
+
+  Generates:
+  - `ch4_onmf_urban_maps.pdf`: abundance maps (rows of H reshaped 307×307; MATLAB order replicated),
+  - `ch4_onmf_urban_error.pdf`: relative error per iteration.
 
 #### Chapter 5 - NMF models (CBCL and Urban)
 
