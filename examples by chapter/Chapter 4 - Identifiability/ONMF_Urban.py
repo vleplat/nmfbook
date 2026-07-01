@@ -14,9 +14,11 @@ if BASE not in sys.path:
 from algorithms.onmf import onmf, ONMFOptions
 from algorithms.separable_nmf.spa_matlab import spa_matlab, SPAOptions
 from utils.affichage import affichage
+from utils.silence_warnings import silence_numpy_warnings
 
 
 def main():
+    silence_numpy_warnings()
     data_path = os.path.join(BASE, "data sets", "Urban.mat")
     import scipy.io as sio
     mat = sio.loadmat(data_path)

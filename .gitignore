@@ -29,7 +29,7 @@ dist/
 # Ignore selected Chapter example folders
 # examples by chapter/Chapter 3 - Nonnegative rank/
 # examples by chapter/Chapter 4 - Identifiability/
-examples by chapter/Chapter 7 - Separable NMF/
+# examples by chapter/Chapter 7 - Separable NMF/
 
 # Ignore diagnostic files
 tools/

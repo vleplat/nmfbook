@@ -10,9 +10,11 @@ if BASE not in sys.path:
 
 sys.path.insert(0, os.path.dirname(__file__))
 from isSSC_full import isSSC_full
+from utils.silence_warnings import silence_numpy_warnings
 
 
 def main():
+    silence_numpy_warnings()
     # Example 4.29 - sufficiently scattered condition (4x6, 2-sparse)
     H = np.array([
         [1, 1, 1, 0, 0, 0],

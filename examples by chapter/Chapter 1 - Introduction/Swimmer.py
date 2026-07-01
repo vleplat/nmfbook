@@ -68,7 +68,7 @@ def main():
     affichage(Hminv.T, (h, w), ncols=17, suptitle="Basis images with min-vol NMF", save_path=os.path.join(figs, "swimmer_basis_minvol.pdf"))
 
     # 5) NMU (recursive)
-    Wnmu, Hnmu = recursive_nmu(X_alg, r, RecursiveNMUOptions(Cnorm=1, maxiter=200, display=1))
+    Wnmu, Hnmu = recursive_nmu(X_alg, r, RecursiveNMUOptions(Cnorm=2, maxiter=200, display=1))
     affichage(Hnmu.T, (h, w), ncols=17, suptitle="Basis images with NMU", save_path=os.path.join(figs, "swimmer_basis_nmu.pdf"))
 
     print("Saved swimmer figures in", figs)

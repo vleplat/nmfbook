@@ -13,9 +13,11 @@ if BASE not in sys.path:
 
 from algorithms.minvol_nmf import minvol_nmf, MinVolNMFOptions
 from utils.affichage import affichage
+from utils.silence_warnings import silence_numpy_warnings
 
 
 def main():
+    silence_numpy_warnings()
     # Example 4.48: Urban hyperspectral image, r=6
     data_path = os.path.join(BASE, "data sets", "Urban.mat")
     import scipy.io as sio

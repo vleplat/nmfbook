@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import numpy as np
+import warnings
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -16,11 +17,15 @@ from isSSC_full import ssc1_nec_cond
 
 
 def main():
+    # Silence benign runtime warnings (overflow/invalid during dense ops)
+    np.seterr(all="ignore")
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+    warnings.filterwarnings("ignore", category=UserWarning)
     # Figure 4.6 illustration (downsized for speed)
     r_list = list(range(10, 51, 10))      # 10:10:50
     d_list = [round(x, 1) for x in np.arange(0.1, 1.0, 0.1)]  # 0.1:0.1:0.9
     n = 100
-    nattemps = int(os.environ.get("NATTEMPTS", "100"))
+    nattemps = int(os.environ.get("NATTEMPTS", "20"))
     print("****************************")
     print(f"     Test for n = {n:2d}   ")
     print("****************************")

@@ -9,9 +9,11 @@ if BASE not in sys.path:
     sys.path.insert(0, BASE)
 sys.path.insert(0, os.path.dirname(__file__))
 from isSSC_full import ssc1_nec_cond
+from utils.silence_warnings import silence_numpy_warnings
 
 
 def main():
+    silence_numpy_warnings()
     # Example matrix H to test SSC1 necessary condition (build to mirror .m)
     # Users can edit H to reproduce MATLAB tests
     np.set_printoptions(linewidth=200, suppress=True)

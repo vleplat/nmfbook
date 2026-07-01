@@ -246,6 +246,29 @@ You can import and use algorithms in your own scripts, or run the provided chapt
 
 The examples compute the project base path dynamically, so you can run them from anywhere.
 
+Tip: silencing benign numerical warnings
+
+If your terminal shows many Runtime/User warnings during demos, use one of:
+
+- Per-run (recommended):
+
+  ```bash
+  PYTHONWARNINGS=ignore python "examples by chapter/Chapter X/YourScript.py"
+  ```
+
+- Repo-level (ensures sitecustomize.py is loaded):
+
+  ```bash
+  PYTHONPATH=. python "examples by chapter/Chapter X/YourScript.py"
+  ```
+
+- Per-script (already used in several demos):
+
+  ```python
+  from utils.silence_warnings import silence_numpy_warnings
+  silence_numpy_warnings()
+  ```
+
 #### Symmetric NMF, random demo
 
 ```bash
@@ -413,8 +436,8 @@ Notes:
 - SSC1 necessary condition illustration (Figure 4.6)
 
   ```bash
-  # Optional: control trials per grid point (default 100)
-  NATTEMPTS=100 python "examples by chapter/Chapter 4 - Identifiability/SSC1_nec_cond_illus.py"
+  # Optional: control trials per grid point (default 20)
+  NATTEMPTS=20 python "examples by chapter/Chapter 4 - Identifiability/SSC1_nec_cond_illus.py"
   ```
 
   What this does (per MATLAB doc, Chapter 4):
@@ -567,6 +590,61 @@ This generates:
 - a community graph visualization.
 
 All figures are saved under `figs/`.
+
+#### Chapter 7 - Separable NMF
+
+- CBCL separable NMF (Figure 7.2)
+
+  ```bash
+  python "examples by chapter/Chapter 7 - Separable NMF/CBCL_sepNMF.py"
+  ```
+
+  What this does:
+  - Applies SPA on Xᵀ with column L1-normalization to select r=49 anchors (indices K),
+  - Sets H = X[K, :], then solves W by nonnegative least squares so that X ≈ W H,
+  - Displays the basis images of W (7×19×19).
+
+  Generates:
+  - `ch7_cbcl_sepNMF_basis.pdf`
+
+- Greedy separable-NMF algorithms comparison (Figures 7.5–7.6)
+
+  ```bash
+  python "examples by chapter/Chapter 7 - Separable NMF/compare_greedy_sepNMFalgo.py"
+  ```
+
+  What this does:
+  - Compares SPA, VCA, FastAnchorWords, SNPA, MVE‑SPA, and SPA‑SPA across four synthetic settings:
+    1) well‑conditioned Dirichlet, 2) well‑conditioned Middle‑points,
+    3) ill‑conditioned Dirichlet, 4) ill‑conditioned Middle‑points.
+  - Uses smaller sizes than the book for speed (noted in script comments),
+  - Plots success rate vs. noise level for each experiment.
+
+  Generates:
+  - `ch7_sepNMF_compare_xp1.pdf`, `ch7_sepNMF_compare_xp2.pdf`, `ch7_sepNMF_compare_xp3.pdf`, `ch7_sepNMF_compare_xp4.pdf`
+
+- LDR preprocessing for MVE‑SPA (Figure 7.4)
+
+  ```bash
+  python "examples by chapter/Chapter 7 - Separable NMF/compare_LDR_MVESPA.py"
+  ```
+
+  What this does:
+  - Compares linear dimensionality reduction modes (none, truncated SVD, random projection) as preprocessing for MVE‑SPA,
+  - Uses the ill‑conditioned Dirichlet setting.
+
+  Generates:
+  - `ch7_sepNMF_compare_xp3.pdf`
+
+- Separable tri‑symmetric NMF toy example
+
+  ```bash
+  python "examples by chapter/Chapter 7 - Separable NMF/septrisymNMF_example.py"
+  ```
+
+  What this does:
+  - Builds A = W S Wᵀ with separable W (columns sum to 1) and symmetric S,
+  - Recovers (Ŵ, Ŝ) with a SPA‑based heuristic and prints ||A − Ŵ Ŝ Ŵᵀ||_F.
 
 #### Chapter 8 - NMF algorithms
 

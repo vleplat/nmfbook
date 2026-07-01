@@ -13,9 +13,11 @@ if BASE not in sys.path:
 
 from algorithms.minvol_nmf import minvol_nmf, MinVolNMFOptions
 from utils.affichage import affichage
+from utils.silence_warnings import silence_numpy_warnings
 
 
 def main():
+    silence_numpy_warnings()
     data_path = os.path.join(BASE, "data sets", "Moffet.mat")
     import scipy.io as sio
     mat = sio.loadmat(data_path)
