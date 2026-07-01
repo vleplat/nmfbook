@@ -838,22 +838,6 @@ where python
 
 ---
 
-### Contributing
-
-- Python code mirrors the MATLAB structure as much as possible.
-- When porting functions, keep interfaces and behavior faithful to the original code.
-- Add small numerical safeguards where needed.
-- Use a local virtual environment.
-- Install dependencies with:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-- Save figures to `figs/` with `bbox_inches="tight"` for consistency.
-
----
-
 ### Credits
 
 - Original MATLAB code and book: Nicolas Gillis and collaborators.
